@@ -1,281 +1,453 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
+  <!-- Google AdSense -->
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2650917816591335"
+
+     crossorigin="anonymous"></script>
+
   <meta charset="UTF-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ViroWatch Atlas — Global Virus Tracking Dashboard</title>
+
   <meta name="description" content="Real-time interactive maps tracking dangerous viruses and outbreaks worldwide. Demonstration project with mock data." />
 
   <!-- Fonts -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <!-- Leaflet CSS -->
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Custom CSS -->
+
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2650917816591335"
-       crossorigin="anonymous"></script>
 </head>
 
 <body>
+
   <!-- ════════════════════════════════════════
+
        APP SHELL
+
   ════════════════════════════════════════ -->
+
   <div id="app">
 
     <!-- ── TOP NAV ──────────────────────────── -->
+
     <nav id="top-nav">
+
       <!-- Brand -->
+
       <a class="nav-brand" href="#" aria-label="ViroWatch Atlas Home">
+
         <div class="brand-icon">🦠</div>
+
         <span class="brand-text">Viro<span>Watch</span> Atlas</span>
+
       </a>
 
       <div class="nav-divider"></div>
 
       <!-- Global Overview button -->
+
       <button class="nav-btn" id="overview-btn" title="View all tracked pathogens on the map">
+
         🌍 <span class="nav-label">Global Overview</span>
+
       </button>
 
       <!-- Outbreak Alerts -->
+
       <button class="nav-btn" id="alert-mode-btn" title="Highlight regions with rapidly rising cases">
+
         ⚠️ <span class="nav-label">Alerts</span>
+
         <span class="alert-badge" id="alert-badge">0</span>
+
       </button>
 
       <!-- Spacer -->
+
       <div class="nav-spacer"></div>
 
       <!-- Live indicator -->
+
       <div class="live-badge">
+
         <span class="live-dot"></span> LIVE DEMO
+
       </div>
 
       <div class="nav-divider"></div>
 
       <!-- Dark/Light toggle -->
+
       <button class="icon-btn" id="theme-toggle" title="Toggle light/dark mode">🌙</button>
+
     </nav>
 
     <!-- ── FILTER STRIP ─────────────────────── -->
+
     <div id="filter-strip" role="toolbar" aria-label="Filter viruses">
+
       <span class="filter-label">Category:</span>
+
       <button class="filter-btn active" data-filter-type="category" data-filter-value="ALL">All</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="HEMORRHAGIC">🩸 Hemorrhagic</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="RESPIRATORY">🫁 Respiratory</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="VECTOR">🦟 Vector</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="GASTRO">🦠 GI</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="NEUROLOGICAL">🧠 Neurological</button>
+
       <button class="filter-btn" data-filter-type="category" data-filter-value="SYSTEMIC">⚕️ Systemic</button>
 
       <div class="nav-divider"></div>
+
       <span class="filter-label">Risk:</span>
+
       <button class="filter-btn active" data-filter-type="risk" data-filter-value="ALL">All</button>
+
       <button class="filter-btn" data-filter-type="risk" data-filter-value="Very High">Very High</button>
+
       <button class="filter-btn" data-filter-type="risk" data-filter-value="High">High</button>
+
       <button class="filter-btn" data-filter-type="risk" data-filter-value="Medium">Medium</button>
+
       <button class="filter-btn" data-filter-type="risk" data-filter-value="Low">Low</button>
+
     </div>
 
     <!-- ── MAIN CONTENT ─────────────────────── -->
+
     <div id="main-content">
 
       <!-- ── SIDEBAR ──────────────────────── -->
+
       <aside id="sidebar" aria-label="Virus List">
 
         <div class="sidebar-header">
+
           <div class="sidebar-title">Tracked Pathogens</div>
+
           <div class="search-wrap">
+
             <span class="search-icon">🔍</span>
+
             <input
+
               type="search"
+
               id="virus-search"
+
               placeholder="Search viruses, symptoms…"
+
               autocomplete="off"
+
               spellcheck="false"
+
               aria-label="Search viruses"
+
             />
+
           </div>
+
         </div>
 
         <!-- Scrollable virus list; populated by JS -->
+
         <div id="virus-list" role="list" aria-label="Virus list"></div>
 
         <div class="sidebar-footer">
+
           <span id="virus-count-label"><!-- set by JS --></span>
+
           <span><span class="loading-dot"></span> Mock Data</span>
+
         </div>
+
       </aside>
 
       <!-- ── SIDEBAR TOGGLE ───────────────── -->
+
       <button id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">◀</button>
 
       <!-- ── MAP WRAPPER ──────────────────── -->
+
       <div id="map-wrap">
+
         <!-- Leaflet map -->
+
         <div id="map" aria-label="World outbreak map"></div>
 
         <!-- Map legend overlay -->
+
         <div class="map-legend" id="map-legend">
+
           <div class="legend-title">Outbreak Intensity</div>
+
           <div class="legend-row">
+
             <div class="legend-dot" style="background:#ef4444"></div>
+
             <span>Critical (≥ 80%)</span>
+
           </div>
+
           <div class="legend-row">
+
             <div class="legend-dot" style="background:#f59e0b"></div>
+
             <span>High (50–80%)</span>
+
           </div>
+
           <div class="legend-row">
+
             <div class="legend-dot" style="background:#3b82f6"></div>
+
             <span>Moderate (< 50%)</span>
+
           </div>
+
           <div class="legend-row" style="margin-top:6px; padding-top:6px; border-top:1px solid #1e2d45">
+
             <span style="font-size:10px; color:#4b6380">Circle size = case volume</span>
+
           </div>
+
         </div>
+
       </div>
 
       <!-- ── DETAIL PANEL ──────────────────── -->
+
       <section id="detail-panel" aria-label="Virus detail panel">
 
         <!-- Virus header -->
+
         <div class="panel-header">
+
           <span class="panel-virus-icon" id="detail-icon">🦠</span>
+
           <div class="panel-virus-name" id="detail-virus-name">—</div>
+
           <div class="panel-virus-cat" id="detail-category">—</div>
+
           <p class="panel-virus-desc" id="detail-description">Select a virus from the list to view detailed information and outbreak map.</p>
+
         </div>
 
         <!-- Statistics -->
+
         <div class="stats-section">
+
           <div class="section-label">Global Statistics</div>
+
           <div class="stats-grid">
+
             <div class="stat-card">
+
               <div class="stat-label">Confirmed Cases</div>
+
               <div class="stat-value" id="stat-cases">—</div>
+
             </div>
+
             <div class="stat-card">
+
               <div class="stat-label">Deaths</div>
+
               <div class="stat-value deaths" id="stat-deaths">—</div>
+
             </div>
+
             <div class="stat-card">
+
               <div class="stat-label">Fatality Rate</div>
+
               <div class="stat-value fatality" id="stat-fatality">—</div>
+
             </div>
+
             <div class="stat-card">
+
               <div class="stat-label">7-day Trend</div>
+
               <div class="stat-value trend-val" id="stat-trend">—</div>
+
             </div>
+
           </div>
+
         </div>
 
         <!-- Historical chart -->
+
         <div class="chart-section">
+
           <div class="section-label">12-Month Case Trend</div>
+
           <div class="chart-wrap">
+
             <canvas id="trend-chart"></canvas>
+
           </div>
+
         </div>
 
+        
+
+       
+
         <!-- Transmission methods -->
+
         <div class="trans-section">
+
           <div class="section-label">Transmission Routes</div>
+
           <div class="trans-tags" id="detail-transmission"></div>
+
         </div>
 
         <!-- WHO Risk Level -->
+
         <div class="risk-section">
+
           <div class="section-label" style="margin-bottom:0">WHO Risk Level</div>
+
           <div id="detail-who-risk">—</div>
+
         </div>
 
         <!-- Top affected countries -->
+
         <div class="countries-section">
+
           <div class="section-label">Top Affected Regions</div>
+
           <div id="detail-countries"></div>
+
         </div>
 
       </section>
+
       <!-- /detail-panel -->
 
     </div>
+
     <!-- /main-content -->
 
     <!-- ── FOOTER ───────────────────────────── -->
+
     <footer id="app-footer">
+
       <div class="footer-disclaimer">
+
         <span class="disclaimer-badge">⚠ Demo Only</span>
+
         <span>This is a demonstration project with mock data. Not for medical decisions or clinical use.</span>
+
       </div>
+
       <span>ViroWatch Atlas © 2025 &nbsp;·&nbsp; Data: Simulated</span>
+
     </footer>
 
-
-    <!-- ── GOOGLE ADSENSE AD BLOCK ───────────── -->
-    <!-- ViroWatch ad unit (slot: 9614138893) -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-2650917816591335"
-         data-ad-slot="9614138893"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
   </div>
+
   <!-- /app -->
 
   <!-- ════════════════════════════════════════
+
        SCRIPTS (order matters)
+
   ════════════════════════════════════════ -->
 
   <!-- Leaflet JS -->
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Leaflet.heat (heatmap plugin) -->
+
   <!-- CDN occasionally unavailable; the app gracefully falls back to circle markers -->
+
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
   <!-- Chart.js -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
   <!-- App data -->
+
   <script src="viruses.js"></script>
 
   <!-- App logic -->
+
   <script src="script.js"></script>
 
   <!-- Post-init UI refinements -->
+
   <script>
+
     // Update sidebar virus count label
+
     document.addEventListener("DOMContentLoaded", () => {
+
       const label = document.getElementById("virus-count-label");
+
       if (label) label.textContent = `${VIRUSES.length} pathogens tracked`;
 
       // On mobile: open detail panel when virus is selected
+
       function maybeOpenDetailPanel() {
+
         if (window.innerWidth <= 860) {
+
           document.getElementById("detail-panel").classList.add("panel-open");
+
         }
+
       }
 
       // Patch selectVirus to also open panel on mobile
+
       const origSelect = window.selectVirus;
+
       // (selectVirus is already defined in script.js; we extend the sidebar click)
+
       document.getElementById("virus-list").addEventListener("click", maybeOpenDetailPanel);
 
       // Close panel button for mobile (swipe-down feel via footer tap)
+
       const panel = document.getElementById("detail-panel");
+
       panel.addEventListener("touchstart", (e) => {
+
         // Simple: tapping anywhere on panel when fully open does nothing special
+
       }, { passive: true });
+
     });
+
   </script>
+
 </body>
+
 </html>
