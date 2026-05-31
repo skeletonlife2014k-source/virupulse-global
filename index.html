@@ -391,64 +391,37 @@
 
   <script src="script.js"></script>
 
-  <!-- Post-init UI refinements -->
-
+    <!-- Post-init UI refinements -->
   <script>
-
-    // Update sidebar virus count label
-
     document.addEventListener("DOMContentLoaded", () => {
-
       const label = document.getElementById("virus-count-label");
-
       if (label) label.textContent = `${VIRUSES.length} pathogens tracked`;
 
-      // On mobile: open detail panel when virus is selected
-
       function maybeOpenDetailPanel() {
-
         if (window.innerWidth <= 860) {
-
           document.getElementById("detail-panel").classList.add("panel-open");
-
         }
-
       }
-
-      // Patch selectVirus to also open panel on mobile
-
-      const origSelect = window.selectVirus;
-
-      // (selectVirus is already defined in script.js; we extend the sidebar click)
-
       document.getElementById("virus-list").addEventListener("click", maybeOpenDetailPanel);
-
-      // Close panel button for mobile (swipe-down feel via footer tap)
-
-      const panel = document.getElementById("detail-panel");
-
-      panel.addEventListener("touchstart", (e) => {
-
-        // Simple: tapping anywhere on panel when fully open does nothing special
-
-      }, { passive: true });
-
     });
-  <div align="center">
   </script>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2650917816591335"
-     crossorigin="anonymous"></script>
-<!-- ViroWatch -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2650917816591335"
-     data-ad-slot="9614138893"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-  </div>           
-</body>
 
+  <!-- === GOOGLE ADSENSE BLOCK === -->
+  <div style="margin: 40px auto; padding: 30px 0; max-width: 728px; text-align: center; border-top: 1px solid #334155;">
+    <div style="font-size: 11px; color: #64748b; margin-bottom: 12px;">— Advertisement —</div>
+    
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2650917816591335"
+         data-ad-slot="9614138893"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+  <!-- === END ADSENSE BLOCK === -->
+
+</body>
 </html>
